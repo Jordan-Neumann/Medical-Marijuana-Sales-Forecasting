@@ -1,4 +1,4 @@
-# Medicinal-Marijuana-Sales-Forecasting
+# Medical-Marijuana-Sales-Forecasting
 The goal of this project is to forecast California's medical marijuana sales for the next 12 months.
 
 * Imported California's monthly medical marijuana sales data from January 2014 to November 2020.
