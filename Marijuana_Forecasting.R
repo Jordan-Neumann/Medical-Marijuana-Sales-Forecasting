@@ -3,7 +3,9 @@
 ################################################################
 
 
+
 #### DATA PREPARATION ####
+
 
 
 # Load required packages
@@ -11,6 +13,9 @@ library(fpp2)
 library(lubridate)
 library(dplyr)
 library(scales)
+library(seasonal)
+library(urca)
+library(tseries)
 
 # Read sales data
 marijuana <- read.csv("marijuana.csv") 
@@ -33,7 +38,9 @@ marijuana$Adjusted_Sales <- marijuana$Sales/marijuana$Index
 Y <- ts(marijuana[,5],  start = c(2014,1), frequency = 12)
 
 
+
 #### DATA EXPLORATION ####
+
 
 
 # Plot data
@@ -65,7 +72,9 @@ ggAcf(Y) + ggtitle("Autocorrelation Plot")
 # The scalloped shape appears to show seasonality
 
 
+
 #### BASIC FORECASTING ####
+
 
 
 # Mean method # - forecast is equal to the average value of all historical data
@@ -89,6 +98,7 @@ autoplot(Y) +
 
 # Seasonal naive method - forecast is equal to the value of the most recent observation that occurred in the same season of the year
 snaive(Y, h = 4)
+
 # Plotting predictions further into the future can provide a better understanding of the seasonal naive method.
 autoplot(snaive(Y, h = 24)) + xlab("Year") + ylab("Monthly Sales Dollars") +
   scale_y_continuous(labels = unit_format(unit = "MM", scale = 1e-6))
@@ -100,9 +110,80 @@ autoplot(Y) +
   autolayer(rwf(Y, h=12, drift = TRUE),
             series="Drift", PI=FALSE) +
   autolayer(snaive(Y, h=12),
-            series="Seasonal naïve", PI=FALSE) +
+            series="Seasonal Naive", PI=FALSE) +
   xlab("Year") + ylab("Monthly Sales Dollars") +
   ggtitle("Forecasts") + 
   scale_y_continuous(labels = unit_format(unit = "MM", scale = 1e-6))
+
+
+
+#### DECOMPOSITION ####
+
+
+
+# Decomposition splits time series data into its different components.
+
+# 1) Trend-cycle (Combination of trend and cyclicity)
+# 2) Seasonality
+# 3) Remainder
+
+# If the seasonal component is removed from the original data, the data is said to be "seasonally adjusted."
+
+# There are two types of classical decomposition
+
+# Additive - this method assumes the seasonal component does not change over time
+Y %>% decompose(type="additive") %>%
+  autoplot()
+
+# Multiplicative
+Y %>% decompose(type="multiplicative") %>%
+  autoplot()
+
+# There is not a huge difference between the additive and multiplicative decompositions
+# Additive makes more sense because the magnitude of seasonality does not change over time.
+
+# A newer method of decomposition is X11
+
+# X11
+Y %>% seas(x11="") -> fit
+autoplot(fit) +
+  ggtitle("X11 decomposition of monthly sales")
+
+# The X11 method reduced the much of the remainder significantly
+
+
+
+#### Stationarity ####
+
+
+
+# Data is stationary when its properties do not depend on time
+
+# Differencing is method that transforms time series data by removing its dependency on time
+# Difference(t) = observation(t) - observation(t-1)
+
+# Let's take first differences of the data 
+Y %>% diff() %>% autoplot()
+# The data seems to resemble white noise.  How can we be sure?
+
+# Statistical hypothesis tests
+
+# Null hypothesis - the data are stationary
+Y %>% ur.kpss() %>% summary() # The test-statistic is similar to the critical values
+Y %>% diff() %>% ur.kpss()  %>% summary() # The test-statistic is very small relative to the critical values 
+# Therefore, do not reject the null
+
+# We can also use the ndiffs() function to determine how many differences we need
+ndiffs(Y)
+
+# Should we take any seasonal differences?
+nsdiffs(Y)
+
+# Let's look at the ACF plots for the data and the differenced data
+DY <- diff(Y)
+
+ggAcf(Y) # The data is not stationary
+ggAcf(DY) # There are a few lags with high autocorrelation but the data seems relatively stationary
+
 
 
