@@ -7,3 +7,5 @@ The goal of this project is to forecast California's medical marijuana sales for
 * Created four preliminary models - mean, naive (random walk), random walk with drift, and seasonal naive 
 * Explored decomposition and differencing of the data
 * Next Steps - Forecast using exponential smoothing (ETS), ARIMA, and Seasonal ARIMA models
+
+View the kaggle notebook [here](https://www.kaggle.com/jordankeith/marijuana-time-series-prediction/edit/run/52727895).
