@@ -1,5 +1,5 @@
 ################################################################
-# GOAL - Forecast California's monthly medicinal marijuana sales
+# GOAL - Forecast Colorado's monthly medicinal marijuana sales
 ################################################################
 
 
