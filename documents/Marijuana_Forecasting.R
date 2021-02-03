@@ -20,7 +20,6 @@ library(ggplot2)
 #Consumer Price Index Data
 #https://fred.stlouisfed.org/series/CPIAUCSL
 
-
 # Read sales data
 marijuana <- read.csv("marijuana.csv") 
 
@@ -42,11 +41,7 @@ marijuana$Adjusted_Sales <- marijuana$Sales/marijuana$Index
 Y <- ts(marijuana[,5],  start = c(2014,1), frequency = 12)
 
 
-
-
 #### DATA EXPLORATION ####
-
-
 
 
 # Plot data
@@ -75,11 +70,7 @@ ggsubseriesplot(Y) + xlab("Month") + ylab("Monthly Sales Dollars") +
   scale_y_continuous(labels = unit_format(unit = "MM", scale = 1e-6))
 
 
-
-
 #### BENCHMARK FORECASTING ####
-
-
 
 
 # Mean method - Forecasts using this method are equal to the average value of all previous observations.
@@ -95,7 +86,6 @@ autoplot(Y) +
 # The mean absoulte error (MAE) is 4,554,857. We will use this metric to compare all future models.
 summary(meanf(Y, h=12))
 
-
 # Naive method (Random Walk) - Forecasts using this method are equal to the value of the most recent observation
 naive(Y, h = 12)
 
@@ -107,7 +97,6 @@ autoplot(Y) +
 
 # The mean absoulte error (MAE) is 2,022,780. This is a huge improvement from the mean model!
 summary(naive(Y, h = 12))
-
 
 # Random walk with a drift - Forecasts using this method are equal to the value of the most recent observation
 # PLUS the average change of all previous observations
@@ -133,7 +122,6 @@ autoplot(Y) +
   scale_y_continuous(labels = unit_format(unit = "MM", scale = 1e-6)) + 
   xlab("Year") + ylab("Monthly Sales Dollars")
 
-
 # Seasonal naive method - forecast is equal to the value of the most recent observation that occurred in the same season of the year
 snaive(Y, h = 12)
 
@@ -156,12 +144,7 @@ autoplot(Y) +
   scale_y_continuous(labels = unit_format(unit = "MM", scale = 1e-6))
 
 
-
-
-
 #### DECOMPOSITION ####
-
-
 
 
 # Decomposition splits time series data into its different components.
@@ -185,10 +168,8 @@ Y %>% decompose(type="multiplicative") %>%
 # The multiplicative decomposition plot looks almost identical to the additive decomposition plot
 # The additive decomposition model makes the most sense for this data because the magnitude of the seasonality does not change over time.
 
-
 # There are also modern ways to decompose data.
 # Three of them are presented here. These models attempt make up for the shortcomings of the additive and multiplicative models.
-
 
 # X11
 Y %>% seas(x11="") -> fit
@@ -205,11 +186,7 @@ Y %>%
   autoplot()
 
 
- 
-
 #### Stationarity ####
-
-
 
 
 # Time series data is stationary when its properties do not depend on time.
@@ -234,7 +211,6 @@ autoplot(DY) + xlab("Year") + ylab("Monthly Sales Dollars") +
   ggtitle("Monthly Change In Retail Medical Marijuana Sales") + 
   scale_y_continuous(labels = unit_format(unit = "MM", scale = 1e-6))
 
-
 # Let's take first differences of the data 
 Y %>% diff() %>% autoplot()
 # The data looks stationary.
@@ -250,12 +226,9 @@ ggAcf(DY)
 # How can we be sure that we are taking the right number of first differences and seasonal differences? Statistical tests!
 # KPSS test null hypothesis - The data is stationary
 
-# Statistical hypothesis tests
-
-# Null hypothesis - the data are stationary
-Y %>% ur.kpss() %>% summary() # The test-statistic is similar to the critical values
+Y %>% ur.kpss() %>% summary() # The test-statistic is similar to the critical values.  We have enough evidence to reject the null.
 Y %>% diff() %>% ur.kpss()  %>% summary() # The test statistic is very small
-# we do not have enough evidence to reject the null. The data is stationary!
+# We do not have enough evidence to reject the null. The data is stationary!
 
 # We can also use the ndiffs() function to determine how many differences we need
 ndiffs(Y) #1
@@ -264,9 +237,8 @@ ndiffs(Y) #1
 nsdiffs(Y) #0
 
 
-
-
 #### ETS "Exponential Smoothing" MODEL ####
+
 
 # To explain this method, let's discuss previous methods.
 
@@ -302,16 +274,14 @@ checkresiduals(fit)
 summary(ets(Y))
 
 
-
-
 #### ARIMA (Auto Regressive Integrated Moving Average) MODELS ####
+
 
 # ARIMA models consist of a combination of the three components beloW
 
 # Autoregressive (AR) models use linear combinations of previous values to forecast future values
 # Integrated (I) - this describes the order of differencing of a time series
 # Moving Average (MA) models use the errors of prevous forecasts to forecast future values
-
 
 # SARIMA (Seasonal ARIMA)
 # In addition to the components above, SARIMA models have a seasonal component
@@ -354,9 +324,8 @@ summary(fit)
 checkresiduals(fit)
 
 
-
-
 #### SUMMARY ####
+
 
 # Through visualization and decomposition techniques, we identified the data as being non-stationary (i.e. it has seasonality and trend).  
 # Our best benchmark model was the seasonal naïve method according to the mean absolute error (MAE). This is likely because it considered the seasonality of the data.
@@ -371,5 +340,3 @@ checkresiduals(fit)
 # Because of the pandemic, people are staying home more often and have more opportunities to use marijuana.
 # Additionally, medical marijuana may be allieviating increased levels of anxiety caused by the pandemic.
 # These factors could perhaps be accounted for using neural networks, bootstrapping, and bagging models.
-
-
