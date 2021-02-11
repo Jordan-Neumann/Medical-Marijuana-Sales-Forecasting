@@ -1,4 +1,4 @@
-# Medical-Marijuana-Sales-Forecasting
+# Pharmaceutical-Sales-Forecasting
 * The goal of this project is to forecast Colorado's medical marijuana sales through November 2021
 * Adjusted sales for inflation using Consumer Price Index for all urban consumers
 * Visualized the data by creating time, seasonal, and autocorrelation plots
